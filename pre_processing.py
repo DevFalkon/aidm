@@ -25,7 +25,7 @@ IMAGE_FILE_EXTENSIONS = (".jpg", ".jpeg", ".png")
 CHUNK_SIZE = 64
 
 # Size to resize the image to (in px)
-IMG_SIZE = (128, 128) 
+IMG_SIZE = (144, 144) 
 
 def load_single_image(item, size):
     # Worker fn to load and pad a single img preserving aspect ratio
