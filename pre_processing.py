@@ -22,6 +22,8 @@ VALIDATE_DIR = Path(os.path.join(DATASET_DIR, "val"))
 
 IMAGE_FILE_EXTENSIONS = (".jpg", ".jpeg", ".png")
 
+CHUNK_SIZE = 64
+
 # Size to resize the image to (in px)
 IMG_SIZE = (128, 128) 
 
@@ -46,7 +48,7 @@ def load_single_image(item, size):
             img_resized = img.resize((new_w, new_h), Image.Resampling.BILINEAR)
 
             # Create a new black canvas of the target size
-            new_img = Image.new("RGB", (target_w, target_h), (0, 0, 0))
+            new_img = Image.new("RGB", size, (0, 0, 0))
 
             # Paste the resized image into the center of the black canvas
             paste_x = (target_w - new_w) // 2
@@ -93,7 +95,7 @@ def process_split(split_name, split_path, workers=8):
     # Use multiprocessing to decode and resize across all CPU cores simultaneously
     valid_images = 0
     with ProcessPoolExecutor(max_workers=workers) as ex:
-        results = ex.map(load_func, image_items, chunksize=64)
+        results = ex.map(load_func, image_items, chunksize=CHUNK_SIZE)
         for img_arr, label, path_str, err in tqdm(results, total=n_images, desc=f"Resizing {split_name}"):
             if err:
                 print(f"Failed to load {path_str}: {err}")
