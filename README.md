@@ -16,6 +16,8 @@ A high-performance, resolution-agnostic custom Convolutional Neural Network (CNN
 
 ## How to Reproduce Our Results?
 
+NOTE: This repo does not contain the Cats vs Dogs dataset, place the dataset in the same directory as this project. Make sure the Dataset has the following sub-directories: train, val and test (ie dataset/train, dataset/val and dataset/test).
+
 ### Setting Up python environment
 
 1. create and activate python virtual environment
@@ -71,4 +73,14 @@ Get submission.csv
 
 ```
 python test.py
+```
+
+### (Optional) Model Tuning
+
+NOTE: Our model has already been tuned for Cats vs Dogs dataset
+
+To tune model:
+
+```
+python tune.py
 ```
