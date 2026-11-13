@@ -180,7 +180,7 @@ def main():
         for images, labels in train_loop:
             images, labels = images.to(device), labels.to(device)
 
-            # (Only applied during training)
+            # Only applied during training
             images = apply_augmentations(images)
 
             optimizer.zero_grad()
