@@ -8,11 +8,17 @@ from pathlib import Path
 import os
 import numpy as np
 from tqdm import tqdm
+import random
+
 
 from model import CatDogCNN
 
 # ==================== CONSTANTS ====================
 CACHE_DIR = Path(os.path.join(os.path.abspath(""), "cache"))
+
+# Add this in your constants section
+CHECKPOINT_DIR = Path("epochs")
+CHECKPOINT_DIR.mkdir(parents=True, exist_ok=True)
 
 # Model hyperparameters - optimised using optuna
 BATCH_SIZE    = 32
@@ -20,12 +26,28 @@ LEARNING_RATE = 1.9e-4
 DROPOUT       = 0.38
 WEIGHT_DECAY  = 8.8e-5
 
+TRAINING_SEED = 42  # Can by any int, but we use 42 for training
+LOAD_EPOCH = ""
+
 EPOCHS = 50
 
 NUM_WORKERS = 0     # 0 workers is fastest if dataset is loaded into RAM
 
 ROTATION_ANGLE = 20 # Rotation angle for image augmentation
 # ===================================================
+
+def set_seed(seed):
+    """Sets the seed for complete reproducibility across runs."""
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    
+    # Ensures deterministic behavior in PyTorch convolutions (can slightly slow down training)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
 
 class CachedDataset(Dataset):
     def __init__(self, cache_dir, split="train", load_into_ram=False):
@@ -82,11 +104,28 @@ def apply_augmentations(images):
         
         images = TF.resized_crop(images, top, left, crop_h, crop_w, size=(h, w))
     
-
     return images
 
 
+def load_checkpoint(checkpoint_path, model, optimizer=None):
+    """Loads a saved model checkpoint and optional optimizer state."""
+    checkpoint = torch.load(checkpoint_path)
+    model.load_state_dict(checkpoint['model_state_dict'])
+    
+    if optimizer and 'optimizer_state_dict' in checkpoint:
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        
+    start_epoch = checkpoint.get('epoch', 0)
+    best_loss = checkpoint.get('best_val_loss', float('inf'))
+    
+    print(f"Successfully loaded checkpoint from {checkpoint_path} (resuming from epoch {start_epoch})")
+    return start_epoch, best_loss
+
+
 def main():
+    # set training seed
+    set_seed(TRAINING_SEED)
+
     # Device Configuration for CUDA
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
@@ -114,11 +153,15 @@ def main():
     
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3)
 
+    start_epoch = 0
     best_val_loss = float('inf')
     model_save_path = "best_cat_dog_cnn.pth"
 
+    if LOAD_EPOCH:
+        start_epoch, best_val_loss = load_checkpoint(CHECKPOINT_DIR / LOAD_EPOCH, model, optimizer)
+
     # Training & Validation Loop with tqdm
-    for epoch in range(EPOCHS):
+    for epoch in range(start_epoch, EPOCHS):
         print(f"\nEpoch [{epoch+1}/{EPOCHS}]")
         
         # --- Training Phase ---
@@ -185,6 +228,17 @@ def main():
             best_val_loss = epoch_val_loss
             torch.save(model.state_dict(), model_save_path)
             print(f"--> Saved new best model to {model_save_path}")
+
+        # Periodic checkpoint saving every 10 epochs
+        if (epoch + 1) % 10 == 0:
+            checkpoint_path = CHECKPOINT_DIR / f"model_epoch_{epoch + 1}.pth"
+            torch.save({
+                'epoch': epoch + 1,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'best_val_loss': best_val_loss,
+            }, checkpoint_path)
+            print(f"--> Saved periodic checkpoint to {checkpoint_path}")
 
     print(f"\nTraining complete. Best model saved with validation loss: {best_val_loss:.4f}")
 
