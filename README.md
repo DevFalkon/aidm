@@ -31,13 +31,13 @@ env/Scripts/activate
 
 Note: the requirements_with_cuda132.txt presumes your cuda version is 13.2, if not (or no cuda), install the correct pytorch version from: https://pytorch.org/get-started/locally/
 
-Installatoin of requirements with cuda 13.2
+Installatoin of pytorch with cuda 13.2
 
 ```
 pip install -r requirements_with_cuda132.txt
 ```
 
-Installation of requriements (manually install pytorch from the link above)
+Installation of other requirements
 
 ```
 pip install -r requirements_no_cuda.txt
