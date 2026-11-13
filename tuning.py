@@ -17,7 +17,7 @@ TUNING_EPOCHS = 5  # Shortened epochs per trial for fast searching
 # ===================================================
 
 class CachedDataset(Dataset):
-    def __init__(self, cache_dir, split="train", is_train=False, load_into_ram=False):
+    def __init__(self, cache_dir, split="train", load_into_ram=False):
         cache_path = Path(cache_dir)
         if load_into_ram:
             self.x = np.load(cache_path / f"{split}_images.npy").copy()
@@ -25,7 +25,6 @@ class CachedDataset(Dataset):
         else:
             self.x = np.load(CACHE_DIR / f"{split}_images.npy")
             self.y = np.load(CACHE_DIR / f"{split}_labels.npy")
-        self.is_train = is_train
 
     def __len__(self):
         return len(self.x)
@@ -37,22 +36,22 @@ class CachedDataset(Dataset):
         return img_tensor, label_tensor
 
 def objective(trial, train_dataset, val_dataset, device):
-    # 1. Suggest hyperparameter values to test
+    # Suggest hyperparameter values to test
     lr = trial.suggest_float("lr", 1e-4, 1e-2, log=True)
     batch_size = trial.suggest_categorical("batch_size", [32, 64, 128])
     dropout = trial.suggest_float("dropout", 0.1, 0.5)
     weight_decay = trial.suggest_float("weight_decay", 1e-5, 1e-3, log=True)
     
-    # 2. Build DataLoaders with the trial's suggested batch size
+    # Build DataLoaders with the trial's suggested batch size
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=NUM_WORKERS)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=NUM_WORKERS)
 
-    # 3. Initialize model, loss, and optimizer
+    # Initialize model, loss, and optimizer
     model = CatDogCNN(dropout=dropout).to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
 
-    # 4. Train for a few short epochs to evaluate this configuration
+    # Train for a few short epochs to evaluate this configuration
     for epoch in range(TUNING_EPOCHS):
         model.train()
         train_loop = tqdm(train_loader, desc=f"Trial {trial.number} | Epoch {epoch+1}/{TUNING_EPOCHS}", leave=False)
@@ -67,7 +66,7 @@ def objective(trial, train_dataset, val_dataset, device):
 
             train_loop.set_postfix(loss=loss.item())
 
-    # 5. Calculate validation loss for this trial
+    # Calculate validation loss for this trial
     model.eval()
     val_loss = 0.0
     with torch.no_grad():
@@ -86,8 +85,8 @@ def main():
 
     # Load datasets into RAM once so trials run instantly
     print("Loading datasets into RAM...")
-    train_dataset = CachedDataset(CACHE_DIR, split="train", is_train=False, load_into_ram=True)
-    val_dataset = CachedDataset(CACHE_DIR, split="val", is_train=False, load_into_ram=True)
+    train_dataset = CachedDataset(CACHE_DIR, split="train", load_into_ram=True)
+    val_dataset = CachedDataset(CACHE_DIR, split="val", load_into_ram=True)
 
     # Run Optuna Study
     print("Starting hyperparameter tuning study...")
