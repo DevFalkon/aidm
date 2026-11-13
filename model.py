@@ -1,10 +1,6 @@
 # Builds and trains SmallCNN
 from torch import nn
 
-# Per-channel mean and std of the 20,000 training images, used to normalise inputs as the network is trained with normalised inputs
-MEAN = (0.49028948740277584, 0.45472687488651065, 0.41614527356985886)
-STD = (0.25880977670607586, 0.2517956977208403, 0.2536230131633195)
-
 
 class CatDogCNN(nn.Module):
     # Four VGG-style blocks, then global average pooling, dropout (0.3) and a linear layer
