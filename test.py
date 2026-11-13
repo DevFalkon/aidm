@@ -13,7 +13,7 @@ from model import CatDogCNN
 # ==================== CONSTANTS ====================
 TEST_DIR        = Path("dataset/test")
 MODEL_PATH      = Path("epochs/model_epoch_80.pth")
-OUTPUT_CSV      = Path("predictions.csv")
+OUTPUT_CSV      = Path("submission.csv")
 
 IMAGE_SIZE      = 144   # Matches the training resolution
 BATCH_SIZE      = 64

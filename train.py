@@ -229,12 +229,6 @@ def main():
         print(f"Train Loss: {epoch_train_loss:.4f} | Train Acc: {epoch_train_acc*100:.2f}%")
         print(f"Val Loss:   {epoch_val_loss:.4f} | Val Acc:   {epoch_val_acc*100:.2f}%")
 
-        # Early Stopping Check: Save best model based on validation loss
-        if epoch_val_loss < best_val_loss:
-            best_val_loss = epoch_val_loss
-            torch.save(model.state_dict(), model_save_path)
-            print(f"--> Saved new best model to {model_save_path}")
-
         # Periodic checkpoint saving every 10 epochs
         if (epoch + 1) % 10 == 0:
             checkpoint_path = CHECKPOINT_DIR / f"model_epoch_{epoch + 1}.pth"
