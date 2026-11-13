@@ -82,5 +82,5 @@ NOTE: Our model has already been tuned for Cats vs Dogs dataset
 To tune model:
 
 ```
-python tune.py
+python tuning.py
 ```
