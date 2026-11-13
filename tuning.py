@@ -40,15 +40,17 @@ def objective(trial, train_dataset, val_dataset, device):
     # 1. Suggest hyperparameter values to test
     lr = trial.suggest_float("lr", 1e-4, 1e-2, log=True)
     batch_size = trial.suggest_categorical("batch_size", [32, 64, 128])
+    dropout = trial.suggest_float("dropout", 0.1, 0.5)
+    weight_decay = trial.suggest_float("weight_decay", 1e-5, 1e-3, log=True)
     
     # 2. Build DataLoaders with the trial's suggested batch size
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=NUM_WORKERS)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=NUM_WORKERS)
 
     # 3. Initialize model, loss, and optimizer
-    model = CatDogCNN().to(device)
+    model = CatDogCNN(dropout=dropout).to(device)
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=lr)
+    optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
 
     # 4. Train for a few short epochs to evaluate this configuration
     for epoch in range(TUNING_EPOCHS):
@@ -103,4 +105,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    

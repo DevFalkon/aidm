@@ -13,9 +13,15 @@ from model import CatDogCNN
 
 # ==================== CONSTANTS ====================
 CACHE_DIR = Path(os.path.join(os.path.abspath(""), "cache"))
-BATCH_SIZE = 32
-LEARNING_RATE = 4e-4
-EPOCHS = 25
+
+# Model hyperparameters - optimised using optuna
+BATCH_SIZE    = 32
+LEARNING_RATE = 1.9e-4
+DROPOUT       = 0.38
+WEIGHT_DECAY  = 8.8e-5
+
+EPOCHS = 50
+
 NUM_WORKERS = 0     # 0 workers is fastest if dataset is loaded into RAM
 
 ROTATION_ANGLE = 20 # Rotation angle for image augmentation
@@ -102,9 +108,9 @@ def main():
     print(f"Training samples: {len(train_dataset)} | Validation samples: {len(val_dataset)}")
 
     # Initialize Model, Loss, Optimizer, and Scheduler
-    model = CatDogCNN().to(device)
+    model = CatDogCNN(dropout=DROPOUT).to(device)
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
+    optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY)
     
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3)
 
