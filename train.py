@@ -10,8 +10,7 @@ import numpy as np
 from tqdm import tqdm
 import random
 
-
-from model import CatDogCNN
+from model import CatDogCNN, init_weights
 
 # ==================== CONSTANTS ====================
 CACHE_DIR = Path(os.path.join(os.path.abspath(""), "cache"))
@@ -27,7 +26,7 @@ DROPOUT       = 0.38
 WEIGHT_DECAY  = 8.8e-5
 
 TRAINING_SEED = 42  # Can by any int, but we use 42 for training
-LOAD_EPOCH = "model_epoch_10.pth"
+LOAD_EPOCH = ""
 
 EPOCHS = 80
 
@@ -148,7 +147,10 @@ def main():
     print(f"Training samples: {len(train_dataset)} | Validation samples: {len(val_dataset)}")
 
     # Initialize Model, Loss, Optimizer, and Scheduler
-    model = CatDogCNN(dropout=DROPOUT).to(device)
+    model = CatDogCNN(dropout=DROPOUT)
+    init_weights(model)
+    model.to(device)
+
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY)
     
