@@ -29,7 +29,7 @@ env\Scripts\activate
 
 2. Install dependancies
 
-Note: the requirements.txt presumes your cuda version is 13.2, if not (or no cuda), install the correct pytorch version from: https://pytorch.org/get-started/locally/
+Note: the requirements_with_cuda132.txt presumes your cuda version is 13.2, if not (or no cuda), install the correct pytorch version from: https://pytorch.org/get-started/locally/
 
 Installatoin of requirements with cuda 13.2
 
