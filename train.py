@@ -27,9 +27,9 @@ DROPOUT       = 0.38
 WEIGHT_DECAY  = 8.8e-5
 
 TRAINING_SEED = 42  # Can by any int, but we use 42 for training
-LOAD_EPOCH = ""
+LOAD_EPOCH = "model_epoch_10.pth"
 
-EPOCHS = 50
+EPOCHS = 80
 
 NUM_WORKERS = 0     # 0 workers is fastest if dataset is loaded into RAM
 
@@ -125,6 +125,7 @@ def load_checkpoint(checkpoint_path, model, optimizer=None):
 def main():
     # set training seed
     set_seed(TRAINING_SEED)
+    print(f"Training using fixed seed: {TRAINING_SEED}")
 
     # Device Configuration for CUDA
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -157,8 +158,11 @@ def main():
     best_val_loss = float('inf')
     model_save_path = "best_cat_dog_cnn.pth"
 
-    if LOAD_EPOCH:
+    if LOAD_EPOCH and LOAD_EPOCH in os.listdir(CHECKPOINT_DIR):
+        print(f"laoding epoch: {LOAD_EPOCH}")
         start_epoch, best_val_loss = load_checkpoint(CHECKPOINT_DIR / LOAD_EPOCH, model, optimizer)
+    else:
+        print("No model to load")
 
     # Training & Validation Loop with tqdm
     for epoch in range(start_epoch, EPOCHS):
