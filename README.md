@@ -65,10 +65,10 @@ python train.py
 
 ### Model Evaluation on Test dataset
 
-Run
+NOTE: test.py requires a saved pytorch model, by default: "epochs/model_epoch_80.pth". If your trained model has a different name or path, accordingly modify the path in line 15 of test.py.
+
+Get submission.csv
 
 ```
 python test.py
 ```
-
-This should generate the required submission.csv
