@@ -50,7 +50,7 @@ In order to reduce training time, the images in train and val directies need to 
 to pre process, run:
 
 ```
-python pre_process.py
+python pre_processing.py
 ```
 
 This should create a folder called cache with 6 .npy files
