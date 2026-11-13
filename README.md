@@ -37,7 +37,7 @@ Installatoin of requirements with cuda 13.2
 pip install -r requirements_with_cuda132.txt
 ```
 
-Installation of requriements (manually install cuda from the link above)
+Installation of requriements (manually install pytorch from the link above)
 
 ```
 pip install -r requirements_no_cuda.txt
