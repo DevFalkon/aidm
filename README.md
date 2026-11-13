@@ -27,20 +27,20 @@ python -m venv env
 env/Scripts/activate
 ```
 
-2. Install dependancies
+2. Install dependencies
 
-Note: the requirements_with_cuda132.txt presumes your cuda version is 13.2, if not (or no cuda), install the correct pytorch version from: https://pytorch.org/get-started/locally/
+Note: the requirements_with_cuda132.txt presumes your cuda version is 13.2, if not (or no cuda), install the correct PyTorch version from: https://pytorch.org/get-started/locally/
 
-Installatoin of pytorch with cuda 13.2
+Installation of PyTorch with cuda 13.2
 
 ```
 pip install -r requirements_with_cuda132.txt
 ```
 
-Installation of other requirements
+Installation of other requirements (remember to install PyTorch from the link above, if not already isntalled)
 
 ```
-pip install -r requirements_no_cuda.txt
+pip install -r requirements.txt
 ```
 
 ### Pre-processing Train and Validate Dataset
