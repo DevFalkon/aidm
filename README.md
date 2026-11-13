@@ -24,7 +24,7 @@ NOTE: This repo does not contain the Cats vs Dogs dataset, place the dataset in 
 
 ```
 python -m venv env
-env\Scripts\activate
+env/Scripts/activate
 ```
 
 2. Install dependancies
